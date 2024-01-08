@@ -1,16 +1,13 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "lib": [
-      "es2021"
-    ],
     "strict": true,
     "module": "CommonJS",
+    "declaration": true,
     "target": "es2021",
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "outDir": "./dist",
     "rootDir": "src"
   },
   "include": [

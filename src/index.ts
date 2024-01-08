@@ -1,11 +1,5 @@
-import { Command } from 'commander';
-const program = new Command();
+import Application from "./application";
 
-program
-  .command('hello')
-  .description('hello world')
-  .action(() => {
-    console.log('hello world');
-  });
-
-program.parse();
+export {
+  Application,
+}
