@@ -1,6 +1,6 @@
 {
-  "name": "@palico-ai/palico-client",
-  "version": "0.0.2",
+  "name": "palico-app",
+  "version": "0.0.1",
   "main": "src/index.js",
   "license": "Apache-2.0",
   "publishConfig": {
