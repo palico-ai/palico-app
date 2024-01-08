@@ -1,6 +1,6 @@
 {
   "name": "palico-client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "src/index.js",
   "license": "Apache-2.0",
   "publishConfig": {
@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "test": "echo \"Error: No Tests\" && exit 0",
     "build:watch": "tsc -w",
     "ts": "NODE_ENV=local ts-node",
     "clean:build": "rm -rf **/*.js **/*.js.map **/*.d.ts",
