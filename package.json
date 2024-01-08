@@ -1,6 +1,6 @@
 {
   "name": "palico-app",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "src/index.js",
   "license": "Apache-2.0",
   "publishConfig": {
@@ -11,7 +11,7 @@
     "test": "echo \"Error: No Tests\" && exit 0",
     "build:watch": "tsc -w",
     "ts": "NODE_ENV=local ts-node",
-    "clean:build": "rm -rf **/*.js **/*.js.map **/*.d.ts",
+    "clean:build": "rm -rf **/*.js && rm -rf **/*.d.ts && rm -rf **/*.js.map",
     "clean": "rm -rf ./node_modules && npm run clean:build"
   },
   "bin": "./src/cli/index.js",
