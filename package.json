@@ -1,7 +1,7 @@
 {
   "name": "palico-app",
   "version": "0.0.3",
-  "main": "index.js",
+  "main": "lib/index.js",
   "license": "Apache-2.0",
   "publishConfig": {
     "@palico-ai:registry": "https://npm.pkg.github.com"
@@ -11,14 +11,14 @@
     "test": "echo \"Error: No Tests\" && exit 0",
     "build:watch": "tsc -w",
     "ts": "NODE_ENV=local ts-node",
-    "clean:build": "rm -rf dist",
+    "clean:build": "rm -rf lib",
     "clean": "rm -rf ./node_modules && npm run clean:build"
   },
   "files": [
-    "dist/**/*"
+    "lib/**/*"
   ],
   "bin": {
-    "palico-app": "cli/index.js"
+    "palico-app": "lib/cli/index.js"
   },
   "dependencies": {
     "archiver": "^6.0.1",

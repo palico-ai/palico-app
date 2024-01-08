@@ -4,4 +4,4 @@ dist
 **/*.js
 **/*.map
 **/*.d.ts
-bin
+lib

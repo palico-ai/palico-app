@@ -9,13 +9,13 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "rootDir": "src",
-    "outDir": "dist",
+    "outDir": "lib",
   },
   "include": [
     "src"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "lib"
   ]
 }
