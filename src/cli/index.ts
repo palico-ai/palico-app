@@ -1,25 +1,31 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import BuildProjectAction from "./actions/bundle";
-import PublishProjetAction from "./actions/publish";
-const program = new Command();
+import { BuildProjectAction } from "./actions/bundle.js";
+import { PublishProjetAction } from "./actions/publish.js";
+import { ServeDevServer } from "./actions/serve.js";
+import { SandboxCommand } from "./sandbox/index.js";
 
-program
+const root = new Command();
+
+root
   .command("hello")
-  .description("hello world")
-  .action(() => {
-    console.log("hello world");
+  .argument("<name>", "name of the user")
+  .option("-t, --title <title>", "title of the user")
+  .action((name, options) => {
+    console.log(`Hello ${name}`);
+    console.log(`Title: ${options.title}`);
   });
 
-program
-  .command("build")
-  .description("build project")
-  .action(BuildProjectAction);
+root.command("build").description("build project").action(BuildProjectAction);
 
-program
+root
   .command("publish")
   .description("publish project")
   .action(PublishProjetAction);
 
-program.parse();
+root.command("serve").description("serve project").action(ServeDevServer);
+
+root.addCommand(SandboxCommand);
+
+root.parse();
