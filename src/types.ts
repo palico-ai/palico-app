@@ -1,52 +1,56 @@
 import { JSONSchema6 } from "json-schema";
 import { OpenAI } from "openai";
 
-export interface PalicoIncludeConfig {
+export interface IncludeStatement {
   files: string[];
   directories: string[];
 }
 
-export interface PalicoConfig {
-  app: string,
-  include: PalicoIncludeConfig;
+export interface PackageConfig {
+  BundleFileKey: any;
+  BuildDirectory: any;
+  app: string;
+  include: IncludeStatement;
   scripts: {
-    bundle: string[]
-  }
+    bundle: string[];
+  };
 }
 
 export type Message = OpenAI.Chat.ChatCompletionMessageParam;
 
 export enum ToolExecutionEnvironment {
-  Client = 'client',
-  // API = 'backend'
+  Client = "client",
+  Local = "local",
 }
 
-export interface ITool {
+interface IToolSchema {
   name: string;
   description: string;
-  input?: JSONSchema6
-  output?: JSONSchema6
-  executionEnvironment: ToolExecutionEnvironment
+  input?: JSONSchema6;
+  output?: JSONSchema6;
+  executionEnvironment: ToolExecutionEnvironment;
 }
 
+interface ClientToolSchema extends IToolSchema {
+  executionEnvironment: ToolExecutionEnvironment.Client;
+}
+
+interface LocalToolSchema extends IToolSchema {
+  executionEnvironment: ToolExecutionEnvironment.Local;
+  handler: (input: any) => Promise<any>;
+}
+
+export type ITool = ClientToolSchema | LocalToolSchema;
+
 export interface Toolset {
-  name: string
-  tools: ITool[]
+  name: string;
+  tools: ITool[];
 }
 
 export interface PromptBuilder {
-  getSystemPrompt() : string
-  getPromptForQuery(query: string) : string
+  getSystemPrompt(): Promise<string>;
+  getPromptForQuery(query: string): Promise<string>;
 }
-
-export type FunctionPath = {
-  entryPoint: string
-}
-
-export interface Evaluator {
-  evaluate(): Promise<void>
-}
-
 
 export interface ProjectConfig {
   orgId: number;
@@ -55,29 +59,31 @@ export interface ProjectConfig {
 }
 
 export interface ApplicationConfig {
-  project: ProjectConfig
-  model?: string
-  promptBuilder: PromptBuilder
-  toolsets: Toolset[]
-  evaluator: Evaluator
-  eventListener?: {
-    onTokenUsage?: FunctionPath
-    onAgentRequest?: FunctionPath
-  }
+  project: ProjectConfig;
+  model: string;
+  promptBuilder: PromptBuilder;
+  toolset: Toolset;
 }
 
-export interface Evaluator {
-  evaluate(): Promise<void>
+export interface Application {
+  readonly config: ApplicationConfig;
+
+  query(query: string): Promise<Message>;
+
+  getPromptForQuery(queryr: string): Promise<string>;
+
+  getSystemPrompt(): Promise<string>;
 }
 
-// export interface Application {
-//   config: ApplicationConfig
+export enum RequestAction {
+  Query = "query",
+  GetPrompt = "get_prompt",
+  GetSystemPrompt = "get_system_prompt",
+}
 
-//   run() : Promise<void>
+export interface RequestEvent<Payload = any> {
+  action: RequestAction;
+  payload: Payload;
+}
 
-//   datasetBuilder(): Promise<void>
-
-//   evaluate() : Promise<void>
-
-//   finetune() : Promise<void>
-// }
+export type RequestHandler = (event: RequestEvent) => Promise<any>;
