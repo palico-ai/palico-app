@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import { ShowSandboxStatus } from "./status.js";
 import { SandboxCheckoutHandler } from "./checkout.js";
+import ServeSandboxAction from "./serve.js";
 
 export const SandboxCommand = new Command("sandbox");
 
@@ -16,6 +17,4 @@ SandboxCommand.command("checkout")
 
 SandboxCommand.command("serve")
   .description("deploy current project to a sandbox")
-  .action(() => {
-    console.log("Deploying current project to a sandbox");
-  });
+  .action(ServeSandboxAction);

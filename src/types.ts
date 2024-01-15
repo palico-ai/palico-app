@@ -9,11 +9,11 @@ export interface IncludeStatement {
 export interface PackageConfig {
   BundleFileKey: any;
   BuildDirectory: any;
-  app: string;
-  include: IncludeStatement;
-  scripts: {
-    bundle: string[];
+  app: {
+    entryPath: string;
+    build: string[];
   };
+  include: IncludeStatement;
 }
 
 export type Message = OpenAI.Chat.ChatCompletionMessageParam;
