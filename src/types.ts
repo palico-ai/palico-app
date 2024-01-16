@@ -7,8 +7,6 @@ export interface IncludeStatement {
 }
 
 export interface PackageConfig {
-  BundleFileKey: any;
-  BuildDirectory: any;
   app: {
     entryPath: string;
     build: string[];

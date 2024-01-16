@@ -62,7 +62,13 @@ export default class CurrentProject {
     } = await CurrentProject.getPackageConfig();
     const packageRootPath = await CurrentProject.getPackageDirectory();
     const packageBundlePath = await CurrentProject.getPackageBundlePath();
-    await ZipDirectory(packageRootPath, packageBundlePath, include);
+    await ZipDirectory(packageRootPath, packageBundlePath, {
+      files: [
+        ...include.files,
+        config.ProjectConfigFileName
+      ],
+      directories: include.directories,
+    });
     return {
       bundlePath: packageBundlePath,
       metadata: {
@@ -81,11 +87,13 @@ export default class CurrentProject {
     return activeSandbox;
   }
 
-  static async getApplicationConfig(): Promise<ApplicationConfig> {
+  static async getApplicationConfig(buildApp: boolean = true): Promise<ApplicationConfig> {
     if (this.applicationConfig) {
       return this.applicationConfig;
     }
-    await this.buildApplication();
+    if (buildApp) {
+      await this.buildApplication();
+    }
     const projectRootPath = await this.getPackageDirectory();
     const config = await this.getPackageConfig();
     this.applicationConfig =
@@ -100,7 +108,8 @@ export default class CurrentProject {
 
   static async getPackageBundlePath() {
     const projectRootPath = await this.getPackageDirectory();
-    const config = await this.getPackageConfig();
-    return `${projectRootPath}/${config.BuildDirectory}/${config.BundleFileKey}`;
+    const bundlePath =  `${projectRootPath}/${config.TempDirectory}/${config.BundleFileKey}`;
+    console.log(`Bundle path: ${bundlePath}`);
+    return bundlePath;
   }
 }
