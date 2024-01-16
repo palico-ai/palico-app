@@ -2,8 +2,19 @@ import * as findUp from "find-up";
 import { readFileSync } from "fs";
 import { ApplicationConfig, PackageConfig, ProjectConfig } from "../types";
 import config from "../config";
+import { RunShellCommands } from "./os";
+import ZipDirectory from "./create_zip";
+import PreferenceStore, { ActiveSandbox } from "./preference_store";
+
+export interface ApplicationBundle {
+  bundlePath: string;
+  metadata: {
+    appEntryPath: string;
+  };
+}
 
 export default class CurrentProject {
+  private static hasBuiltApplication: boolean = false;
   private static projectPath: string;
   private static projectConfig: PackageConfig;
   private static applicationConfig: any;
@@ -31,14 +42,62 @@ export default class CurrentProject {
     return this.projectConfig;
   }
 
-  static async getApplicationConfig(): Promise<ApplicationConfig> {
+  static async buildApplication(): Promise<void> {
+    if (this.hasBuiltApplication) {
+      return;
+    }
+    const config = await this.getPackageConfig();
+    const buildCommands = config.app.build;
+    if (buildCommands && buildCommands.length > 0) {
+      await RunShellCommands(buildCommands);
+    }
+    this.hasBuiltApplication = true;
+  }
+
+  static async createApplicationBundle(): Promise<ApplicationBundle> {
+    await this.buildApplication();
+    const {
+      include,
+      app: { entryPath },
+    } = await CurrentProject.getPackageConfig();
+    const packageRootPath = await CurrentProject.getPackageDirectory();
+    const packageBundlePath = await CurrentProject.getPackageBundlePath();
+    await ZipDirectory(packageRootPath, packageBundlePath, {
+      files: [
+        ...include.files,
+        config.ProjectConfigFileName
+      ],
+      directories: include.directories,
+    });
+    return {
+      bundlePath: packageBundlePath,
+      metadata: {
+        appEntryPath: entryPath,
+      },
+    };
+  }
+
+  static async getOrThrowActiveSandbox() : Promise<ActiveSandbox> {
+    const activeSandbox = await PreferenceStore.getActiveSandbox();
+    if (!activeSandbox) {
+      throw new Error(
+        `No active sandbox. Please run 'sandbox checkout' to select a sandbox`
+      );
+    }
+    return activeSandbox;
+  }
+
+  static async getApplicationConfig(buildApp: boolean = true): Promise<ApplicationConfig> {
     if (this.applicationConfig) {
       return this.applicationConfig;
+    }
+    if (buildApp) {
+      await this.buildApplication();
     }
     const projectRootPath = await this.getPackageDirectory();
     const config = await this.getPackageConfig();
     this.applicationConfig =
-      require(`${projectRootPath}/${config.app}`).default;
+      require(`${projectRootPath}/${config.app.entryPath}`).default;
     return this.applicationConfig;
   }
 
@@ -49,7 +108,8 @@ export default class CurrentProject {
 
   static async getPackageBundlePath() {
     const projectRootPath = await this.getPackageDirectory();
-    const config = await this.getPackageConfig();
-    return `${projectRootPath}/${config.BuildDirectory}/${config.BundleFileKey}`;
+    const bundlePath =  `${projectRootPath}/${config.TempDirectory}/${config.BundleFileKey}`;
+    console.log(`Bundle path: ${bundlePath}`);
+    return bundlePath;
   }
 }
