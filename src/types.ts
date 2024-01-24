@@ -1,5 +1,6 @@
-import { JSONSchema6 } from "json-schema";
 import { OpenAI } from "openai";
+import { ZodSchema } from "zod";
+
 
 export interface IncludeStatement {
   files: string[];
@@ -14,21 +15,18 @@ export interface PackageConfig {
   include: IncludeStatement;
 }
 
-export type Message = OpenAI.Chat.ChatCompletionMessageParam;
-
 export enum ToolExecutionEnvironment {
   Client = "client",
   Local = "local",
 }
 
-interface IToolSchema {
+interface IToolSchema<InputSchema = any, OutputSchema = any> {
   name: string;
   description: string;
-  input?: JSONSchema6;
-  output?: JSONSchema6;
+  input?: ZodSchema<InputSchema>;
+  output?: ZodSchema<OutputSchema>;
   executionEnvironment: ToolExecutionEnvironment;
 }
-
 interface ClientToolSchema extends IToolSchema {
   executionEnvironment: ToolExecutionEnvironment.Client;
 }
@@ -62,26 +60,3 @@ export interface ApplicationConfig {
   promptBuilder: PromptBuilder;
   toolset: Toolset;
 }
-
-export interface Application {
-  readonly config: ApplicationConfig;
-
-  query(query: string): Promise<Message>;
-
-  getPromptForQuery(queryr: string): Promise<string>;
-
-  getSystemPrompt(): Promise<string>;
-}
-
-export enum RequestAction {
-  Query = "query",
-  GetPrompt = "get_prompt",
-  GetSystemPrompt = "get_system_prompt",
-}
-
-export interface RequestEvent<Payload = any> {
-  action: RequestAction;
-  payload: Payload;
-}
-
-export type RequestHandler = (event: RequestEvent) => Promise<any>;
