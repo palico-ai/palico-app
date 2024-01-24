@@ -3,8 +3,21 @@
   "version": "0.0.0-development",
   "main": "lib/index.js",
   "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/palico-ai/palico-app/issues"
+  },
+  "homepage": "https://github.com/palico-ai/palico-app#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palico-ai/palico-app"
+  },
   "publishConfig": {
     "access": "public"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ]
   },
   "scripts": {
     "build": "tsc",
@@ -21,11 +34,6 @@
   ],
   "bin": {
     "palico-cli": "lib/cli/index.js"
-  },
-  "release": {
-    "branches": [
-      "main"
-    ]
   },
   "dependencies": {
     "archiver": "^6.0.1",
