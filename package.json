@@ -4,13 +4,15 @@
   "main": "lib/index.js",
   "license": "Apache-2.0",
   "publishConfig": {
-    "@palico-ai:registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: No Tests\" && exit 0",
     "build:watch": "tsc -w",
     "ts": "NODE_ENV=local ts-node",
+    "semantic-release": "semantic-release",
+    "prepack": "npm run build",
     "clean:build": "rm -rf lib",
     "clean": "rm -rf ./node_modules && npm run clean:build"
   },
@@ -18,7 +20,7 @@
     "lib/**/*"
   ],
   "bin": {
-    "palico-app": "lib/cli/index.js"
+    "palico-cli": "lib/cli/index.js"
   },
   "release": {
     "branches": [
