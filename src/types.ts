@@ -41,13 +41,13 @@ export interface Toolset {
   tools: ITool[]
 }
 
+export interface PromptParamsCommon {
+  context: MessageContext
+}
+
 export interface PromptBuilder {
-  getSystemPrompt: (params: {
-    context: MessageContext
-  }) => Promise<string>
-  getPromptForQuery: (query: string, params: {
-    context: MessageContext
-  }) => Promise<string>
+  getSystemPrompt: (params: PromptParamsCommon) => Promise<string>
+  getPromptForQuery: (query: string, params: PromptParamsCommon) => Promise<string>
 }
 
 export type MessageContext = Record<string, unknown>
