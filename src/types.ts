@@ -42,9 +42,15 @@ export interface Toolset {
 }
 
 export interface PromptBuilder {
-  getSystemPrompt: () => Promise<string>
-  getPromptForQuery: (query: string) => Promise<string>
+  getSystemPrompt: (params: {
+    context: MessageContext
+  }) => Promise<string>
+  getPromptForQuery: (query: string, params: {
+    context: MessageContext
+  }) => Promise<string>
 }
+
+export type MessageContext = Record<string, unknown>
 
 export interface ProjectConfig {
   orgId: number

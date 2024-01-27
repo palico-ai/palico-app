@@ -1,16 +1,21 @@
 import { type ChatCompletionTool } from 'openai/resources/chat/completions'
 import { type RequestHandler } from '../types'
 import zodToJsonSchema from 'zod-to-json-schema'
+import { type MessageContext } from '../../types'
+
+// TODO: Add request validation
 
 export interface GetSystemPromptResponseBody {
   prompt: string
 }
 
 export const GetSystemPromptRequestHandler: RequestHandler<
-unknown,
+MessageContext,
 GetSystemPromptResponseBody
-> = async (_, app) => {
-  const prompt = await app.promptBuilder.getSystemPrompt()
+> = async (payload, app) => {
+  const prompt = await app.promptBuilder.getSystemPrompt({
+    context: payload
+  })
   return {
     statusCode: 200,
     body: {
@@ -21,6 +26,7 @@ GetSystemPromptResponseBody
 
 export interface GetPromptRequestBody {
   query: string
+  context: Record<string, unknown>
 }
 
 export interface GetPromptResponseBody {
@@ -31,7 +37,9 @@ export const GetPromptRequestHandler: RequestHandler<
 GetPromptRequestBody,
 GetPromptResponseBody
 > = async (payload, app) => {
-  const prompt = await app.promptBuilder.getPromptForQuery(payload.query)
+  const prompt = await app.promptBuilder.getPromptForQuery(payload.query, {
+    context: payload.context
+  })
   return {
     statusCode: 200,
     body: {
