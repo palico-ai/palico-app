@@ -58,9 +58,13 @@ export interface ProjectConfig {
   apiKey: string
 }
 
-export interface ApplicationConfig {
-  project: ProjectConfig
+export interface ModelConfig {
   model: string
+  openaiApiKey: string
+}
+
+export interface ApplicationConfig extends ModelConfig {
+  project: ProjectConfig
   promptBuilder: PromptBuilder
-  toolset: Toolset
+  toolset?: Toolset
 }
