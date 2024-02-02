@@ -3,13 +3,14 @@ import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import { eventContext } from 'aws-serverless-express/middleware'
 import { type AppResponse, RequestAction, type RequestHandler } from './types.js'
-import { GetPromptRequestHandler, GetSystemPromptRequestHandler, GetToolSetRequestHandler } from './handlers/index.js'
+import { GetModelConfigHandler, GetPromptRequestHandler, GetSystemPromptRequestHandler, GetToolSetRequestHandler } from './handlers/index.js'
 
 export default class AppEventHandler {
   private static readonly eventHandlerMap: Record<RequestAction, RequestHandler<any, any>> = {
     [RequestAction.GetSystemPrompt]: GetSystemPromptRequestHandler,
     [RequestAction.GetPrompt]: GetPromptRequestHandler,
-    [RequestAction.GetToolSet]: GetToolSetRequestHandler
+    [RequestAction.GetToolSet]: GetToolSetRequestHandler,
+    [RequestAction.GetModelConfig]: GetModelConfigHandler
   }
 
   private readonly config: ApplicationConfig

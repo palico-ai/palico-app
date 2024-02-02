@@ -4,6 +4,7 @@ export enum RequestAction {
   GetPrompt = 'get_prompt',
   GetSystemPrompt = 'get_system_prompt',
   GetToolSet = 'get_toolset',
+  GetModelConfig = 'get_model_config'
 }
 
 export interface RequestEvent<Payload = any> {
