@@ -24,6 +24,8 @@
     "test": "echo \"Error: No Tests\" && exit 0",
     "build:watch": "tsc -w",
     "ts": "NODE_ENV=local ts-node",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
     "semantic-release": "semantic-release",
     "prepack": "npm run build",
     "clean:build": "rm -rf lib",
