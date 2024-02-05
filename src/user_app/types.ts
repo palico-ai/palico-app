@@ -1,4 +1,5 @@
 import { type ZodSchema } from 'zod'
+import { type ChatCompletionCreateParamsBase } from 'openai/resources/chat/completions'
 
 export interface IncludeStatement {
   files: string[]
@@ -25,6 +26,7 @@ interface IToolSchema<InputSchema = any, OutputSchema = any> {
   output?: ZodSchema<OutputSchema>
   executionEnvironment: ToolExecutionEnvironment
 }
+
 interface ClientToolSchema extends IToolSchema {
   executionEnvironment: ToolExecutionEnvironment.Client
 }
@@ -34,11 +36,11 @@ interface LocalToolSchema extends IToolSchema {
   handler: (input: any) => Promise<any>
 }
 
-export type ITool = ClientToolSchema | LocalToolSchema
+export type Tool = ClientToolSchema | LocalToolSchema
 
 export interface Toolset {
   name: string
-  tools: ITool[]
+  tools: Tool[]
 }
 
 export interface PromptParamsCommon {
@@ -59,11 +61,11 @@ export interface ProjectConfig {
 }
 
 export interface ModelConfig {
-  model: string
+  model: ChatCompletionCreateParamsBase['model']
   openaiApiKey: string
 }
 
-export interface ApplicationConfig extends ModelConfig {
+export interface SimpleAppConfig extends ModelConfig {
   project: ProjectConfig
   promptBuilder: PromptBuilder
   toolset?: Toolset

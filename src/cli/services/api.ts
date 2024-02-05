@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { type ProjectConfig } from '../../types.js'
+import { type ProjectConfig } from '../../user_app/types.js'
 import config from '../../config.js'
 import CurrentProject from '../../utils/current_project.js'
 
