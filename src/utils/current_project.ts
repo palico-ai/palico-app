@@ -1,6 +1,6 @@
 import * as findUp from 'find-up'
 import { readFileSync } from 'fs'
-import { type ApplicationConfig, type PackageConfig, type ProjectConfig } from '../types'
+import { type SimpleAppConfig, type PackageConfig, type ProjectConfig } from '../user_app/types'
 import config from '../config'
 import { RunShellCommands } from './os'
 import ZipDirectory from './create_zip'
@@ -87,7 +87,7 @@ export default class CurrentProject {
     return activeSandbox
   }
 
-  static async getApplicationConfig (buildApp: boolean = true): Promise<ApplicationConfig> {
+  static async getApplicationConfig (buildApp: boolean = true): Promise<SimpleAppConfig> {
     if (this.applicationConfig) {
       return this.applicationConfig
     }

@@ -1,30 +1,12 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander'
-import { BuildProjectAction } from './actions/bundle.js'
-import { PublishProjetAction } from './actions/publish.js'
-import { ServeDevServer } from './actions/serve'
+import { ServeDevServer } from './__root__/dev.js'
 import { SandboxCommand } from './sandbox/index'
 
 const root = new Command()
 
-root
-  .command('hello')
-  .argument('<name>', 'name of the user')
-  .option('-t, --title <title>', 'title of the user')
-  .action((name, options) => {
-    console.log(`Hello ${name}`)
-    console.log(`Title: ${options.title}`)
-  })
-
-root.command('build').description('build project').action(BuildProjectAction)
-
-root
-  .command('publish')
-  .description('publish project')
-  .action(PublishProjetAction)
-
-root.command('serve').description('serve project').action(ServeDevServer)
+root.command('dev').description('starts local server').action(ServeDevServer)
 
 root.addCommand(SandboxCommand)
 
