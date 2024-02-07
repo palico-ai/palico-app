@@ -1,21 +1,32 @@
-import { type AgentCallResponse } from '../types'
 import OpenAIConversationThread, { type ToolExecutionMessage } from '../llm/openai'
-import { TagLogger } from '../../utils/logger'
-import { type ModelConfig, type Tool, type PromptBuilder } from '../../user_app/types'
+import { TagLogger } from '../utils/logger'
+import { type ModelConfig, type Tool, type PromptBuilder } from '../app_builder/types'
 import { type ChatCompletionTool } from 'openai/resources'
 import zodToJsonSchema from 'zod-to-json-schema'
-import { type ConversationService } from '../../storage'
+import { type ConversationService } from '../storage/types'
+import type OpenAI from 'openai'
 
-export type AgentIteratorResponse = AgentCallResponse & {
+export interface AgentCallResponse {
+  finishReason: OpenAI.Chat.ChatCompletion.Choice['finish_reason']
+  message: AgentMessage
+}
+
+export interface AgentMessage {
+  role: OpenAI.Chat.ChatCompletionMessageParam['role']
+  content: OpenAI.Chat.ChatCompletionMessageParam['content']
+  toolCalls?: OpenAI.Chat.ChatCompletionMessage['tool_calls']
+}
+
+export type AgentResponse = AgentCallResponse & {
   conversationId: number
 }
 
-interface ReplyAsUserParams {
+export interface ReplyAsUserParams {
   message: string
   context?: Record<string, unknown>
 }
 
-interface ReplyToolOptions {
+export interface ReplyToolOptions {
   toolOutputs: ToolExecutionMessage[]
 }
 
@@ -27,13 +38,18 @@ interface AgentIteratorParams {
   conversationId?: number
 }
 
+export interface Agent {
+  replyAsUser: (params: ReplyAsUserParams) => Promise<AgentResponse>
+  replyWithToolOutputs: (params: ReplyToolOptions) => Promise<AgentResponse>
+}
+
 // const testTools = GetTrelloOpenAITools()
 
 /**
  * Manages conversations, building prompts, running tools, resuming and pausing execution.
  */
-export default class AgentIterator {
-  private static readonly logger = new TagLogger(AgentIterator.name)
+export class StatefulAgent implements Agent {
+  private static readonly logger = new TagLogger(StatefulAgent.name)
   readonly promptBuilder: PromptBuilder
   conversationId?: number
   readonly tools: ChatCompletionTool[]
@@ -44,7 +60,7 @@ export default class AgentIterator {
   constructor (params: AgentIteratorParams) {
     this.conversationId = params.conversationId
     this.promptBuilder = params.promptBuilder
-    this.tools = AgentIterator.getTools(params.tools)
+    this.tools = StatefulAgent.getTools(params.tools)
     this.modelConfig = params.modelConfig
     this.conversationService = params.conversationService
   }
@@ -63,7 +79,7 @@ export default class AgentIterator {
     return toolset
   }
 
-  private async startConversation (options: ReplyAsUserParams): Promise<AgentIteratorResponse> {
+  private async startConversation (options: ReplyAsUserParams): Promise<AgentResponse> {
     const systemMessage = await this.promptBuilder.getSystemPrompt({
       context: options.context ?? {}
     })
@@ -94,7 +110,7 @@ export default class AgentIterator {
     }
   }
 
-  private async replyAsUserToConversation (params: ReplyAsUserParams): Promise<AgentIteratorResponse> {
+  private async replyAsUserToConversation (params: ReplyAsUserParams): Promise<AgentResponse> {
     const { message, context } = params
     if (!this.conversationId) {
       throw new Error('Conversation ID not set')
@@ -123,15 +139,15 @@ export default class AgentIterator {
     }
   }
 
-  async replyAsUser (params: ReplyAsUserParams): Promise<AgentIteratorResponse> {
+  async replyAsUser (params: ReplyAsUserParams): Promise<AgentResponse> {
     if (!this.conversationId) {
       return await this.startConversation(params)
     }
     return await this.replyAsUserToConversation(params)
   }
 
-  async replyWithToolOutputs (params: ReplyToolOptions): Promise<AgentIteratorResponse> {
-    AgentIterator.logger.log('replyWithToolOutputs')
+  async replyWithToolOutputs (params: ReplyToolOptions): Promise<AgentResponse> {
+    StatefulAgent.logger.log('replyWithToolOutputs')
     if (!this.conversationId) {
       throw new Error('Conversation ID not set. Cannot reply with tool outputs')
     }

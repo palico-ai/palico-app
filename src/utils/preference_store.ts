@@ -1,4 +1,4 @@
-import CurrentProject from './current_project'
+import { CurrentProject } from './current_project'
 
 enum PreferenceKey {
   ActiveSandboxID = 'ActiveSandboxID',
@@ -16,7 +16,7 @@ interface ConfigStore {
   delete: (key: PreferenceKey) => void
 }
 
-export default class PreferenceStore {
+export class PreferenceStore {
   private static _configStore: ConfigStore
 
   private static async getConfigStore (): Promise<ConfigStore> {

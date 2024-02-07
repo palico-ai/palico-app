@@ -19,7 +19,7 @@ export enum ToolExecutionEnvironment {
   Local = 'local',
 }
 
-interface IToolSchema<InputSchema = any, OutputSchema = any> {
+export interface IToolSchema<InputSchema = any, OutputSchema = any> {
   name: string
   description: string
   input?: ZodSchema<InputSchema>
@@ -27,11 +27,11 @@ interface IToolSchema<InputSchema = any, OutputSchema = any> {
   executionEnvironment: ToolExecutionEnvironment
 }
 
-interface ClientToolSchema extends IToolSchema {
+export interface ClientToolSchema extends IToolSchema {
   executionEnvironment: ToolExecutionEnvironment.Client
 }
 
-interface LocalToolSchema extends IToolSchema {
+export interface LocalToolSchema extends IToolSchema {
   executionEnvironment: ToolExecutionEnvironment.Local
   handler: (input: any) => Promise<any>
 }
@@ -54,19 +54,16 @@ export interface PromptBuilder {
 
 export type MessageContext = Record<string, unknown>
 
-export interface ProjectConfig {
-  orgId: number
-  projectId: number
-  apiKey: string
-}
-
 export interface ModelConfig {
   model: ChatCompletionCreateParamsBase['model']
   openaiApiKey: string
 }
 
-export interface SimpleAppConfig extends ModelConfig {
-  project: ProjectConfig
+export interface APIApplicationConfig extends ModelConfig {
+  api: {
+    palicoDeploymentId?: string
+    serviceKey: string
+  }
   promptBuilder: PromptBuilder
   toolset?: Toolset
 }

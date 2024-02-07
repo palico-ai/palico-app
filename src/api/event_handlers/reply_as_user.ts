@@ -1,6 +1,6 @@
-import { type MessageContext } from '../../user_app/types'
-import AgentIterator, { type AgentIteratorResponse } from '../../model/agent'
-import { type APIRequestHandler } from '../types'
+import { type MessageContext } from '../../app_builder/types'
+import { type AgentResponse } from '../../agent/stateful_agent'
+import { type EventHandler } from './types'
 
 export interface ReplyAsUserParams {
   conversationId: number
@@ -8,9 +8,9 @@ export interface ReplyAsUserParams {
   context: MessageContext
 }
 
-const ReplyAsUserEventHandler: APIRequestHandler<
+const ReplyAsUserEventHandler: EventHandler<
 ReplyAsUserParams,
-AgentIteratorResponse
+AgentResponse
 > = async (payload, params) => {
   const { conversationId, context, message } = payload
   if (!conversationId) {
@@ -20,19 +20,9 @@ AgentIteratorResponse
     throw new Error('message is required')
   }
   const {
-    promptBuilder,
-    tools,
-    model,
-    storage: { conversation }
+    application
   } = params
-  const agent = new AgentIterator({
-    conversationId,
-    promptBuilder,
-    tools: tools ?? [],
-    modelConfig: model,
-    conversationService: conversation
-  })
-  const response = await agent.replyAsUser({
+  const response = await application.replyAsUser({
     message,
     context
   })

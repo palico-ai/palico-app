@@ -2,13 +2,13 @@ import * as archiver from 'archiver'
 import { createWriteStream } from 'fs'
 import * as path from 'path'
 import { mkdir } from 'fs/promises'
-import { type IncludeStatement } from '../user_app/types.js'
+import { type IncludeStatement } from '../app_builder/types.js'
 
 const CreateDirectoryIfNotExists = async (directoryPath: string): Promise<void> => {
   await mkdir(directoryPath, { recursive: true })
 }
 
-async function ZipDirectory (
+export async function ZipDirectory (
   rootPath: string,
   zipFilePath: string,
   includePaths: IncludeStatement
@@ -68,5 +68,3 @@ async function ZipDirectory (
     // resolve()
   })
 }
-
-export default ZipDirectory

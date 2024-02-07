@@ -1,25 +1,22 @@
 import axios from 'axios'
-import { type ProjectConfig } from '../../user_app/types.js'
 import config from '../../config.js'
-import CurrentProject from '../../utils/current_project.js'
 
 export class ClientAPIService {
   static async instance (): Promise<ClientAPIService> {
-    const config = await CurrentProject.getApplicationConfig()
-    return new ClientAPIService(config.project)
+    return new ClientAPIService('')
   }
 
-  private readonly config: ProjectConfig
+  private readonly apiKey: string
 
-  constructor (config: ProjectConfig) {
-    this.config = config
+  constructor (apiKey: string) {
+    this.apiKey = apiKey
   }
 
   private async getAuthHeader (): Promise<{
     'x-api-key': string
   }> {
     return {
-      'x-api-key': this.config.apiKey
+      'x-api-key': this.apiKey
     }
   }
 

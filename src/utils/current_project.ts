@@ -1,10 +1,9 @@
 import * as findUp from 'find-up'
 import { readFileSync } from 'fs'
-import { type SimpleAppConfig, type PackageConfig, type ProjectConfig } from '../user_app/types'
+import { type APIApplicationConfig, type PackageConfig } from '../app_builder/types'
 import config from '../config'
 import { RunShellCommands } from './os'
-import ZipDirectory from './create_zip'
-import PreferenceStore, { type ActiveSandbox } from './preference_store'
+import { ZipDirectory } from './create_zip'
 
 export interface ApplicationBundle {
   bundlePath: string
@@ -13,7 +12,7 @@ export interface ApplicationBundle {
   }
 }
 
-export default class CurrentProject {
+export class CurrentProject {
   private static hasBuiltApplication: boolean = false
   private static projectPath: string
   private static projectConfig: PackageConfig
@@ -77,17 +76,7 @@ export default class CurrentProject {
     }
   }
 
-  static async getOrThrowActiveSandbox (): Promise<ActiveSandbox> {
-    const activeSandbox = await PreferenceStore.getActiveSandbox()
-    if (!activeSandbox) {
-      throw new Error(
-        'No active sandbox. Please run \'sandbox checkout\' to select a sandbox'
-      )
-    }
-    return activeSandbox
-  }
-
-  static async getApplicationConfig (buildApp: boolean = true): Promise<SimpleAppConfig> {
+  static async getApplicationAPIConfig (buildApp: boolean = true): Promise<APIApplicationConfig> {
     if (this.applicationConfig) {
       return this.applicationConfig
     }
@@ -101,15 +90,9 @@ export default class CurrentProject {
     return this.applicationConfig
   }
 
-  static async getProjectDetails (): Promise<ProjectConfig> {
-    const appConfig = await this.getApplicationConfig()
-    return appConfig.project
-  }
-
   static async getPackageBundlePath (): Promise<string> {
     const projectRootPath = await this.getPackageDirectory()
     const bundlePath = `${projectRootPath}/${config.TempDirectory}/${config.BundleFileKey}`
-    console.log(`Bundle path: ${bundlePath}`)
     return bundlePath
   }
 }
