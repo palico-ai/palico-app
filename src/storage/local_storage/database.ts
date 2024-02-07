@@ -5,7 +5,7 @@ import {
   type ModelDefined
 } from 'sequelize'
 
-const sequelize = new Sequelize('sqlite::memory:')
+export const sequelize = new Sequelize('sqlite::memory:')
 
 export interface ConversationAttributes {
   id: number
@@ -42,8 +42,3 @@ ConversationCreationAttributes
     timestamps: true
   }
 )
-
-// TODO: Add support to sync database
-void sequelize.sync({
-  force: false
-})

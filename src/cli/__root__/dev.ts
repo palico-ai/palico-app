@@ -1,11 +1,13 @@
 import { createExpressApp } from '../../api/express_app'
 import { Application } from '../../app'
 import { LocalStorage } from '../../storage/local_storage'
+import { sequelize } from '../../storage/local_storage/database'
 import { CurrentProject } from '../../utils/current_project'
 
 export const ServeDevServer = async (): Promise<void> => {
   const appConfig = await CurrentProject.getApplicationAPIConfig(false)
   const storage = new LocalStorage()
+  await sequelize.sync({ force: false })
   const app = new Application({
     promptBuilder: appConfig.promptBuilder,
     tools: appConfig.toolset?.tools ?? [],
