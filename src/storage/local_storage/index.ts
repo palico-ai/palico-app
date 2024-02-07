@@ -1,5 +1,5 @@
 import { type ConversationAttributes, ConversationTable } from './database'
-import { type ConversationModel, type UpdatableConversationModel, type ConversationService, type StorageService, type CreateConversationParams } from '..'
+import { type ConversationModel, type UpdatableConversationModel, type ConversationService, type StorageService, type CreateConversationParams } from '../types'
 
 class ConversationServiceImpl implements ConversationService {
   async create (params: CreateConversationParams): Promise<ConversationModel> {

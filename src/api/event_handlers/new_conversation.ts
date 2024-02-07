@@ -1,28 +1,21 @@
-import { type MessageContext } from '../../user_app/types'
-import AgentIterator, { type AgentIteratorResponse } from '../../model/agent'
-import { type APIRequestHandler } from '../types'
+import { type MessageContext } from '../../app_builder/types'
+import { type AgentResponse } from '../../agent/stateful_agent'
+import { type EventHandler } from './types'
 
 export interface NewConversationEventHandlerParams {
   message: string
   context: MessageContext
 }
 
-const NewConversationEventHandler: APIRequestHandler<
+const NewConversationEventHandler: EventHandler<
 NewConversationEventHandlerParams,
-AgentIteratorResponse
+AgentResponse
 > = async (payload, params) => {
   console.log('NewConversationEventHandler', payload)
   const {
-    promptBuilder, tools, model,
-    storage: { conversation }
+    application
   } = params
-  const agent = new AgentIterator({
-    promptBuilder,
-    tools: tools ?? [],
-    modelConfig: model,
-    conversationService: conversation
-  })
-  const response = await agent.replyAsUser({
+  const response = await application.replyAsUser({
     message: payload.message,
     context: payload.context
   })

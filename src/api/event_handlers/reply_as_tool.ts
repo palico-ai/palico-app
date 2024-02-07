@@ -1,13 +1,13 @@
-import AgentIterator, { type AgentIteratorResponse } from '../../model/agent'
-import { type ToolExecutionMessage } from '../../model/llm/openai'
-import { type APIRequestHandler } from '../types'
+import { type AgentResponse } from '../../agent/stateful_agent'
+import { type ToolExecutionMessage } from '../../llm/openai'
+import { type EventHandler } from './types'
 
 export interface ReplyAsToolParams {
   conversationId: number
   toolOutputs: ToolExecutionMessage[]
 }
 
-const ReplyAsToolEventHandler: APIRequestHandler<ReplyAsToolParams, AgentIteratorResponse> = async (payload, params) => {
+const ReplyAsToolEventHandler: EventHandler<ReplyAsToolParams, AgentResponse> = async (payload, params) => {
   const { conversationId, toolOutputs } = payload
   if (!conversationId) {
     throw new Error('conversationId is required')
@@ -15,18 +15,8 @@ const ReplyAsToolEventHandler: APIRequestHandler<ReplyAsToolParams, AgentIterato
   if (!toolOutputs) {
     throw new Error('tooloutputs are required')
   }
-  const {
-    promptBuilder, tools, model,
-    storage: { conversation }
-  } = params
-  const agent = new AgentIterator({
+  const response = await params.application.replyAsTool({
     conversationId,
-    promptBuilder,
-    tools: tools ?? [],
-    modelConfig: model,
-    conversationService: conversation
-  })
-  const response = await agent.replyWithToolOutputs({
     toolOutputs
   })
   return {

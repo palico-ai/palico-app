@@ -1,7 +1,11 @@
 import { OpenAI } from 'openai'
-import { type OpenAIMessage, type AgentCallResponse } from '../types'
 import { type ChatCompletionTool } from 'openai/resources/chat/completions'
-import { TagLogger } from '../../utils/logger'
+import { TagLogger } from '../utils/logger'
+import { type AgentCallResponse } from '../agent/stateful_agent'
+
+export type OpenAIMessage = OpenAI.Chat.ChatCompletionMessageParam & {
+  function_call?: OpenAI.Chat.ChatCompletionMessage['function_call']
+}
 
 interface ConversationThreadConstructor {
   history?: OpenAIMessage[]
