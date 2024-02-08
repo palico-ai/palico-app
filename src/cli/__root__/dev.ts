@@ -1,11 +1,11 @@
-import { createExpressApp } from '../../api/express_app'
+import { ExpressAPIBuilder } from '../../api'
 import { Application } from '../../app'
 import { LocalStorage } from '../../storage/local_storage'
 import { sequelize } from '../../storage/local_storage/database'
 import { CurrentProject } from '../../utils/current_project'
 
 export const ServeDevServer = async (): Promise<void> => {
-  const appConfig = await CurrentProject.getApplicationAPIConfig(false)
+  const appConfig = await CurrentProject.getApplicationAPIConfig()
   const storage = new LocalStorage()
   await sequelize.sync({ force: false })
   const app = new Application({
@@ -17,9 +17,9 @@ export const ServeDevServer = async (): Promise<void> => {
     },
     storage
   })
-  const api = createExpressApp(app)
+  const api = new ExpressAPIBuilder({ application: app })
   const PORT = process.env.PORT ?? 8002
-  api.listen(PORT, () => {
+  api.build().listen(PORT, () => {
     console.log('Server is running on port ' + PORT)
   })
 }
