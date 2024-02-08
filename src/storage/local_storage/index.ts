@@ -2,10 +2,19 @@ import { type ConversationAttributes, ConversationTable } from './database'
 import { type ConversationModel, type UpdatableConversationModel, type ConversationService, type StorageService, type CreateConversationParams } from '../types'
 
 class ConversationServiceImpl implements ConversationService {
+  async getConversationMetadata (id: number): Promise<Record<string, any> | undefined> {
+    const response = await ConversationTable.findByPk(id)
+    if (!response?.dataValues) {
+      return undefined
+    }
+    return JSON.parse(response.dataValues.metadataJSON ?? '{}')
+  }
+
   async create (params: CreateConversationParams): Promise<ConversationModel> {
     const response = await ConversationTable.create({
       toolJSON: JSON.stringify(params.tools),
-      historyJSON: JSON.stringify(params.history)
+      historyJSON: JSON.stringify(params.history),
+      metadataJSON: params.metadata ? JSON.stringify(params.metadata) : undefined
     })
     return ConversationServiceImpl.parseItem(response.dataValues)
   }

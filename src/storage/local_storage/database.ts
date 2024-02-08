@@ -11,13 +11,14 @@ export interface ConversationAttributes {
   id: number
   toolJSON: string
   historyJSON: string
+  metadataJSON?: string
   createdAt: string
   updatedAt: string
 }
 
 export type ConversationCreationAttributes = Optional<
 ConversationAttributes,
-'id' | 'createdAt' | 'updatedAt'
+'id' | 'createdAt' | 'updatedAt' | 'metadataJSON'
 >
 
 export const ConversationTable: ModelDefined<
@@ -35,6 +36,9 @@ ConversationCreationAttributes
       type: DataTypes.STRING
     },
     historyJSON: {
+      type: DataTypes.STRING
+    },
+    metadataJSON: {
       type: DataTypes.STRING
     }
   },

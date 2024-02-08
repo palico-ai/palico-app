@@ -30,7 +30,7 @@ export interface ReplyAsToolParams {
   toolOutputs: ToolExecutionMessage[]
 }
 
-interface AgentIteratorParams {
+interface AgentCurrentStateParams {
   promptBuilder: PromptBuilder
   tools: Tool[]
   modelConfig: ModelConfig
@@ -48,8 +48,8 @@ export interface Agent {
 /**
  * Manages conversations, building prompts, running tools, resuming and pausing execution.
  */
-export class StatefulAgent implements Agent {
-  private static readonly logger = new TagLogger(StatefulAgent.name)
+export class IterativeAgent implements Agent {
+  private static readonly logger = new TagLogger(IterativeAgent.name)
   readonly promptBuilder: PromptBuilder
   conversationId?: number
   readonly tools: ChatCompletionTool[]
@@ -57,10 +57,10 @@ export class StatefulAgent implements Agent {
   private readonly conversationService: ConversationService
 
   // TODO: Add support for different models
-  constructor (params: AgentIteratorParams) {
+  constructor (params: AgentCurrentStateParams) {
     this.conversationId = params.conversationId
     this.promptBuilder = params.promptBuilder
-    this.tools = StatefulAgent.getTools(params.tools)
+    this.tools = IterativeAgent.getTools(params.tools)
     this.modelConfig = params.modelConfig
     this.conversationService = params.conversationService
   }
@@ -147,7 +147,7 @@ export class StatefulAgent implements Agent {
   }
 
   async replyWithToolOutputs (params: ReplyAsToolParams): Promise<AgentResponse> {
-    StatefulAgent.logger.log('replyWithToolOutputs')
+    IterativeAgent.logger.log('replyWithToolOutputs')
     if (!this.conversationId) {
       throw new Error('Conversation ID not set. Cannot reply with tool outputs')
     }

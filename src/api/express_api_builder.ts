@@ -3,9 +3,13 @@ import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import { defaultErrorMiddleware } from './middlewares/default_error_middeware'
 import { NewConersationRequestHandler } from './request_handler/new_conversation'
+import { ReplyAsUserRequestHandler } from './request_handler/reply_as_user'
+import { ReplyAsToolRequestHandler } from './request_handler/reply_as_tool'
+import { GetConversationById } from './request_handler/get_conversation_by_id'
 
 export interface ExpressAPIBuilderParams {
   application: Application
+  authorizer: express.RequestHandler
   serverless?: boolean
 }
 
@@ -13,6 +17,7 @@ export enum Route {
   NewConversation = '/new-conversation',
   ReplyAsUser = '/:conversationId/reply-as-user',
   ReplyAsTool = '/:conversationId/reply-as-tool',
+  GetConversationById = '/admin/conversation/:conversationId',
 }
 
 export class ExpressAPIBuilder {
@@ -20,6 +25,7 @@ export class ExpressAPIBuilder {
   public readonly app: express.Application
   private readonly application: Application
   private readonly preRequestMiddlwares: express.RequestHandler[] = []
+  private readonly authorizer: express.RequestHandler
   private errorHandler?: express.ErrorRequestHandler
   private readonly routeMiddlewares = new Map<Route, express.RequestHandler[]>()
 
@@ -27,6 +33,7 @@ export class ExpressAPIBuilder {
     this.application = params.application
     this.app = express()
     this.router = express.Router()
+    this.authorizer = params.authorizer
   }
 
   addPreRequestMiddleware (middleware: express.RequestHandler): this {
@@ -57,6 +64,7 @@ export class ExpressAPIBuilder {
       res.header('Access-Control-Allow-Headers', '*')
       next()
     })
+    this.app.use(this.authorizer)
     if (this.preRequestMiddlwares.length > 0) {
       this.app.use(...this.preRequestMiddlwares)
     }
@@ -66,11 +74,15 @@ export class ExpressAPIBuilder {
     )
     this.router.route('/agent/:conversationId/reply-as-user').post(
       ...this.routeMiddlewares.get(Route.ReplyAsUser) ?? [],
-      NewConersationRequestHandler(this.application)
+      ReplyAsUserRequestHandler(this.application)
     )
     this.router.route('/agent/:conversationId/reply-as-tool').post(
       ...this.routeMiddlewares.get(Route.ReplyAsTool) ?? [],
-      NewConersationRequestHandler(this.application)
+      ReplyAsToolRequestHandler(this.application)
+    )
+    this.router.route('/storage/conversation/:conversationId').get(
+      ...this.routeMiddlewares.get(Route.GetConversationById) ?? [],
+      GetConversationById(this.application)
     )
     this.app.use(this.router)
     if (this.errorHandler) {

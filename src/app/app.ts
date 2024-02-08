@@ -1,6 +1,6 @@
 import { type ModelConfig, type PromptBuilder, type Tool } from './types'
 import { type StorageService } from '../storage/types'
-import { type ReplyAsUserParams, type AgentResponse, StatefulAgent, type ReplyAsToolParams } from '../agent/stateful_agent'
+import { type ReplyAsUserParams, type AgentResponse, IterativeAgent, type ReplyAsToolParams } from '../agent/iterative_agent'
 
 export interface ApplicationAPIParams {
   storage: StorageService
@@ -31,7 +31,7 @@ export class Application {
   }
 
   public async replyAsUser (params: ReplyAsUserRequest): Promise<AgentResponse> {
-    const agent = new StatefulAgent({
+    const agent = new IterativeAgent({
       promptBuilder: this.promptBuilder,
       tools: this.tools,
       modelConfig: this.model,
@@ -43,7 +43,7 @@ export class Application {
   }
 
   public async replyAsTool (params: ReplyAsToolRequest): Promise<AgentResponse> {
-    const agent = new StatefulAgent({
+    const agent = new IterativeAgent({
       promptBuilder: this.promptBuilder,
       tools: this.tools,
       modelConfig: this.model,

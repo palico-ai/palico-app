@@ -1,7 +1,7 @@
 import { OpenAI } from 'openai'
 import { type ChatCompletionTool } from 'openai/resources/chat/completions'
 import { TagLogger } from '../utils/logger'
-import { type AgentCallResponse } from '../agent/stateful_agent'
+import { type AgentCallResponse } from '../agent/iterative_agent'
 
 export type OpenAIMessage = OpenAI.Chat.ChatCompletionMessageParam & {
   function_call?: OpenAI.Chat.ChatCompletionMessage['function_call']
@@ -54,6 +54,7 @@ export default class OpenAIConversationThread {
       model: this.model,
       temperature: 0,
       messages: this.history,
+      stream: false,
       tools: this.tools
     })
     console.log('OpenAI Response', response)
