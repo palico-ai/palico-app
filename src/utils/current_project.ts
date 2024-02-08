@@ -1,6 +1,6 @@
 import * as findUp from 'find-up'
 import { readFileSync } from 'fs'
-import { type APIApplicationConfig, type PackageConfig } from '../app_builder/types'
+import { type SimpleApplicationConfig, type PackageConfig } from '../app/types'
 import config from '../config'
 import { RunShellCommands } from './os'
 import { ZipDirectory } from './create_zip'
@@ -76,7 +76,7 @@ export class CurrentProject {
     }
   }
 
-  static async getApplicationAPIConfig (buildApp: boolean = true): Promise<APIApplicationConfig> {
+  static async getApplicationAPIConfig (buildApp: boolean = true): Promise<SimpleApplicationConfig> {
     if (this.applicationConfig) {
       return this.applicationConfig
     }

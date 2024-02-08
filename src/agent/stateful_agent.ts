@@ -1,6 +1,6 @@
 import OpenAIConversationThread, { type ToolExecutionMessage } from '../llm/openai'
 import { TagLogger } from '../utils/logger'
-import { type ModelConfig, type Tool, type PromptBuilder } from '../app_builder/types'
+import { type ModelConfig, type Tool, type PromptBuilder } from '../app/types'
 import { type ChatCompletionTool } from 'openai/resources'
 import zodToJsonSchema from 'zod-to-json-schema'
 import { type ConversationService } from '../storage/types'
@@ -26,7 +26,7 @@ export interface ReplyAsUserParams {
   context?: Record<string, unknown>
 }
 
-export interface ReplyToolOptions {
+export interface ReplyAsToolParams {
   toolOutputs: ToolExecutionMessage[]
 }
 
@@ -40,7 +40,7 @@ interface AgentIteratorParams {
 
 export interface Agent {
   replyAsUser: (params: ReplyAsUserParams) => Promise<AgentResponse>
-  replyWithToolOutputs: (params: ReplyToolOptions) => Promise<AgentResponse>
+  replyWithToolOutputs: (params: ReplyAsToolParams) => Promise<AgentResponse>
 }
 
 // const testTools = GetTrelloOpenAITools()
@@ -146,7 +146,7 @@ export class StatefulAgent implements Agent {
     return await this.replyAsUserToConversation(params)
   }
 
-  async replyWithToolOutputs (params: ReplyToolOptions): Promise<AgentResponse> {
+  async replyWithToolOutputs (params: ReplyAsToolParams): Promise<AgentResponse> {
     StatefulAgent.logger.log('replyWithToolOutputs')
     if (!this.conversationId) {
       throw new Error('Conversation ID not set. Cannot reply with tool outputs')

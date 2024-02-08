@@ -2,7 +2,7 @@ import * as archiver from 'archiver'
 import { createWriteStream } from 'fs'
 import * as path from 'path'
 import { mkdir } from 'fs/promises'
-import { type IncludeStatement } from '../app_builder/types.js'
+import { type IncludeStatement } from '../app/types.js'
 
 const CreateDirectoryIfNotExists = async (directoryPath: string): Promise<void> => {
   await mkdir(directoryPath, { recursive: true })

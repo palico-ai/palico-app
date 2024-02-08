@@ -59,11 +59,13 @@ export interface ModelConfig {
   openaiApiKey: string
 }
 
-export interface APIApplicationConfig extends ModelConfig {
-  api: {
-    palicoDeploymentId?: string
-    serviceKey: string
-  }
+export interface PalicoDeploymentConfig {
+  id: string
+  apiKey: string
+}
+
+export interface SimpleApplicationConfig extends ModelConfig {
+  deployment?: PalicoDeploymentConfig
   promptBuilder: PromptBuilder
   toolset?: Toolset
 }
