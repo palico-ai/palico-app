@@ -4,6 +4,7 @@ import { type OpenAIMessage } from '../llm/openai'
 export interface CreateConversationParams {
   tools: ChatCompletionTool[]
   history: OpenAIMessage[]
+  metadata?: Record<string, any>
 }
 
 export interface ConversationModel {
@@ -19,6 +20,7 @@ export type UpdatableConversationModel = Omit<Partial<ConversationModel>, | 'cre
 export interface ConversationService {
   create: (params: CreateConversationParams) => Promise<ConversationModel>
   findById: (id: number) => Promise<ConversationModel | undefined>
+  getConversationMetadata: (id: number) => Promise<Record<string, any> | undefined>
   update: (conversation: Partial<UpdatableConversationModel>) => Promise<void>
 }
 

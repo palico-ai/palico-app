@@ -1,9 +1,6 @@
 import { CurrentProject } from './current_project'
 
-enum PreferenceKey {
-  ActiveSandboxID = 'ActiveSandboxID',
-  ActiveSandboxName = 'ActiveSandboxName',
-}
+type PreferenceKey = string
 
 export interface ActiveSandbox {
   id: number
@@ -37,7 +34,7 @@ export class PreferenceStore {
     return await configStore.get(key)
   }
 
-  static async set (key: PreferenceKey, value: any): Promise<void> {
+  static async set<T> (key: PreferenceKey, value: T): Promise<void> {
     const configStore = await PreferenceStore.getConfigStore()
     configStore.set(key, value)
   }
@@ -45,22 +42,5 @@ export class PreferenceStore {
   static async delete (key: PreferenceKey): Promise<void> {
     const configStore = await PreferenceStore.getConfigStore()
     configStore.delete(key)
-  }
-
-  static async setActiveSandbox (sandbox: ActiveSandbox): Promise<void> {
-    const configStore = await PreferenceStore.getConfigStore()
-    configStore.set(PreferenceKey.ActiveSandboxID, sandbox.id)
-    configStore.set(PreferenceKey.ActiveSandboxName, sandbox.name)
-  }
-
-  static async getActiveSandbox (): Promise<ActiveSandbox | undefined> {
-    const cs = await PreferenceStore.getConfigStore()
-    const id = await cs.get(PreferenceKey.ActiveSandboxID)
-    const name = await cs.get(PreferenceKey.ActiveSandboxName)
-    if (!id || !name) return undefined
-    return {
-      id,
-      name
-    }
   }
 }
