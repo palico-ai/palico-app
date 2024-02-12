@@ -11,8 +11,6 @@ export default class JWTAuthenticator {
         secret,
         {},
         (err, token) => {
-          console.log('token', token)
-          console.log('err', err)
           if (err ?? !token) {
             reject(err)
           } else {
