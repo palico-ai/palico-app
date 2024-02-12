@@ -18,7 +18,8 @@ const GetJWTToken = async (): Promise<string> => {
   const preferenceKey = 'JWTAuth'
   const secret = process.env.JWT_SECRET ?? config.DefaultLocalSecret
   const currentAuth = await PreferenceStore.get<AuthorizationTokenParams>(preferenceKey)
-  if (!currentAuth) {
+  // If no service-key exists
+  if (!currentAuth?.serviceKey) {
     const serviceKey = await JWTAuthenticator.generateAPIJWT({ deploymentId: -1 }, secret)
     await PreferenceStore.set(preferenceKey, {
       currentSecret: secret,
@@ -26,6 +27,7 @@ const GetJWTToken = async (): Promise<string> => {
     })
     return serviceKey
   }
+  // If secret has changed
   if (currentAuth?.currentSecret !== secret) {
     const serviceKey = await JWTAuthenticator.generateAPIJWT({ deploymentId: -1 }, secret)
     await PreferenceStore.set<AuthorizationTokenParams>(preferenceKey, {
