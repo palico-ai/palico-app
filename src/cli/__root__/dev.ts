@@ -18,17 +18,20 @@ const GetJWTToken = async (): Promise<string> => {
   const preferenceKey = 'JWTAuth'
   const secret = process.env.JWT_SECRET ?? config.DefaultLocalSecret
   const currentAuth = await PreferenceStore.get<AuthorizationTokenParams>(preferenceKey)
-  // If no service-key exists
   if (!currentAuth?.serviceKey) {
+    console.log("Service Key doesn't exist...")
+    console.log('Creating new service key')
     const serviceKey = await JWTAuthenticator.generateAPIJWT({ deploymentId: -1 }, secret)
     await PreferenceStore.set(preferenceKey, {
       currentSecret: secret,
-      token: serviceKey
+      serviceKey
     })
     return serviceKey
   }
   // If secret has changed
   if (currentAuth?.currentSecret !== secret) {
+    console.log('JWT Secret has changed')
+    console.log('Creating new JWT Secret')
     const serviceKey = await JWTAuthenticator.generateAPIJWT({ deploymentId: -1 }, secret)
     await PreferenceStore.set<AuthorizationTokenParams>(preferenceKey, {
       currentSecret: secret,
