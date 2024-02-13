@@ -1,13 +1,13 @@
 import * as chalk from 'chalk'
-import { ExpressAPIBuilder } from '../../api'
-import { defaultRequestAuthorizer } from '../../api/middlewares/local_authorizer'
-import { Application } from '../../app'
-import { LocalStorage } from '../../storage/local_storage'
-import { sequelize } from '../../storage/local_storage/database'
-import { CurrentProject } from '../../utils/current_project'
-import JWTAuthenticator from '../../utils/jwt'
-import { PreferenceStore } from '../../utils/preference_store'
-import config from '../../config'
+import { defaultRequestAuthorizer } from '../../../api/middlewares/local_authorizer'
+import { Application } from '../../../app'
+import { LocalStorage } from '../../../storage/local_storage'
+import { sequelize } from '../../../storage/local_storage/database'
+import { CurrentProject } from '../../../utils/current_project'
+import JWTAuthenticator from '../../../utils/jwt'
+import { PreferenceStore } from '../../../utils/preference_store'
+import config from '../../../config'
+import { ExpressAPIBuilder } from '../../../api/express_api_builder'
 
 interface AuthorizationTokenParams {
   currentSecret: string
@@ -42,7 +42,8 @@ const GetJWTToken = async (): Promise<string> => {
   return currentAuth.serviceKey
 }
 
-export const ServeDevServer = async (): Promise<void> => {
+// Compiles the application with specific build command and starts the server
+export const StartDevServer = async (): Promise<void> => {
   const appConfig = await CurrentProject.getApplicationAPIConfig()
   const storage = new LocalStorage()
   await sequelize.sync({ force: false })
@@ -63,3 +64,5 @@ export const ServeDevServer = async (): Promise<void> => {
     console.log(chalk.blue('Service key') + `: ${serviceKey}`)
   })
 }
+
+void StartDevServer()
