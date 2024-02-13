@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander'
-import { ServeDevServer } from './__root__/dev.js'
+import { ServeDevServer } from './__root__/dev'
 
 const root = new Command()
 
