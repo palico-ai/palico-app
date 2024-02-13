@@ -58,7 +58,7 @@ export const StartDevServer = async (): Promise<void> => {
   })
   const serviceKey = await GetJWTToken()
   const api = new ExpressAPIBuilder({ application: app, authorizer: defaultRequestAuthorizer })
-  const PORT = process.env.PORT ?? 8002
+  const PORT = process.env.PORT ?? 8000
   api.build().listen(PORT, () => {
     console.log(chalk.green('Server is running on port ' + PORT))
     console.log(chalk.blue('Service key') + `: ${serviceKey}`)

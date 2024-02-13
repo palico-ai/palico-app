@@ -1,7 +1,7 @@
 import { type ConversationAttributes, ConversationTable } from './database'
 import { type ConversationModel, type UpdatableConversationModel, type ConversationService, type StorageService, type CreateConversationParams } from '../types'
 
-class ConversationServiceImpl implements ConversationService {
+class SQLConversationService implements ConversationService {
   async getConversationMetadata (id: number): Promise<Record<string, any> | undefined> {
     const response = await ConversationTable.findByPk(id)
     if (!response?.dataValues) {
@@ -16,7 +16,7 @@ class ConversationServiceImpl implements ConversationService {
       historyJSON: JSON.stringify(params.history),
       metadataJSON: params.metadata ? JSON.stringify(params.metadata) : undefined
     })
-    return ConversationServiceImpl.parseItem(response.dataValues)
+    return SQLConversationService.parseItem(response.dataValues)
   }
 
   async findById (id: number): Promise<ConversationModel | undefined> {
@@ -24,7 +24,7 @@ class ConversationServiceImpl implements ConversationService {
     if (!response?.dataValues) {
       return undefined
     }
-    return ConversationServiceImpl.parseItem(response.dataValues)
+    return SQLConversationService.parseItem(response.dataValues)
   }
 
   async update (conversation: Partial<UpdatableConversationModel>): Promise<void> {
@@ -57,5 +57,5 @@ class ConversationServiceImpl implements ConversationService {
 }
 
 export class LocalStorage implements StorageService {
-  conversation: ConversationService = new ConversationServiceImpl()
+  conversation: ConversationService = new SQLConversationService()
 }
