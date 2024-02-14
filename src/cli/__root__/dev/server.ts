@@ -46,7 +46,8 @@ const GetJWTToken = async (): Promise<string> => {
 export const StartDevServer = async (): Promise<void> => {
   const appConfig = await CurrentProject.getApplicationAPIConfig()
   const storage = new LocalStorage()
-  await sequelize.sync({ force: false })
+  const FORCE_SYNC = process.env.FORCE_SYNC_DB === 'true'
+  await sequelize.sync({ force: FORCE_SYNC })
   const app = new Application({
     promptBuilder: appConfig.promptBuilder,
     tools: appConfig.toolset?.tools ?? [],
