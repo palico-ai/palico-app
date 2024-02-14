@@ -8,7 +8,7 @@ interface ServeDevServerOptions {
 }
 
 export const ServeDevServer = async (options: ServeDevServerOptions): Promise<void> => {
-  const port = options.port ?? 8000
+  const port = options.port ?? process.env.PORT ?? 8000
   const forceSync = options.forceSync
   const projectPath = await CurrentProject.getPackageDirectory()
   // Expect this to run after compiled with typescript
