@@ -36,13 +36,13 @@ ConversationCreationAttributes
       primaryKey: true
     },
     toolJSON: {
-      type: DataTypes.STRING
+      type: DataTypes.TEXT
     },
     historyJSON: {
-      type: DataTypes.STRING
+      type: DataTypes.TEXT
     },
     metadataJSON: {
-      type: DataTypes.STRING
+      type: DataTypes.TEXT
     }
   },
   {
