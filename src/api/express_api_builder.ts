@@ -1,6 +1,7 @@
 import { type Application } from '../app'
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
+import * as cors from 'cors'
 import { defaultErrorMiddleware } from './middlewares/default_error_middeware'
 import { NewConersationRequestHandler } from './request_handler/new_conversation'
 import { ReplyAsUserRequestHandler } from './request_handler/reply_as_user'
@@ -57,6 +58,7 @@ export class ExpressAPIBuilder {
   }
 
   build (): express.Application {
+    this.app.use(cors())
     this.app.use(bodyParser.json())
     // if (params.serverless) { this.app.use(eventContext()) }
     this.app.use(function (_: unknown, res: any, next: any) {
