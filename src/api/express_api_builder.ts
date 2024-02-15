@@ -7,11 +7,11 @@ import { NewConersationRequestHandler } from './request_handler/new_conversation
 import { ReplyAsUserRequestHandler } from './request_handler/reply_as_user'
 import { ReplyAsToolRequestHandler } from './request_handler/reply_as_tool'
 import { GetConversationById } from './request_handler/get_conversation_by_id'
+import { eventContext } from 'aws-serverless-express/middleware'
 
 export interface ExpressAPIBuilderParams {
   application: Application
   authorizer: express.RequestHandler
-  serverless?: boolean
 }
 
 export enum Route {
@@ -60,7 +60,7 @@ export class ExpressAPIBuilder {
   build (): express.Application {
     this.app.use(cors())
     this.app.use(bodyParser.json())
-    // if (params.serverless) { this.app.use(eventContext()) }
+    this.app.use(eventContext())
     this.app.use(function (_: unknown, res: any, next: any) {
       res.header('Access-Control-Allow-Origin', '*')
       res.header('Access-Control-Allow-Headers', '*')
