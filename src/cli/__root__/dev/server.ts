@@ -4,43 +4,8 @@ import { Application } from '../../../app'
 import { LocalStorage } from '../../../storage/local_storage'
 import { sequelize } from '../../../storage/local_storage/database'
 import { CurrentProject } from '../../../utils/current_project'
-import JWTAuthenticator from '../../../utils/jwt'
-import { PreferenceStore } from '../../../utils/preference_store'
-import config from '../../../config'
 import { ExpressAPIBuilder } from '../../../api/express_api_builder'
-
-interface AuthorizationTokenParams {
-  currentSecret: string
-  serviceKey: string
-}
-
-const GetJWTToken = async (): Promise<string> => {
-  const preferenceKey = 'JWTAuth'
-  const secret = process.env.JWT_SECRET ?? config.DefaultLocalSecret
-  const currentAuth = await PreferenceStore.get<AuthorizationTokenParams>(preferenceKey)
-  if (!currentAuth?.serviceKey) {
-    console.log("Service Key doesn't exist...")
-    console.log('Creating new service key')
-    const serviceKey = await JWTAuthenticator.generateAPIJWT({ deploymentId: -1 }, secret)
-    await PreferenceStore.set(preferenceKey, {
-      currentSecret: secret,
-      serviceKey
-    })
-    return serviceKey
-  }
-  // If secret has changed
-  if (currentAuth?.currentSecret !== secret) {
-    console.log('JWT Secret has changed')
-    console.log('Creating new JWT Secret')
-    const serviceKey = await JWTAuthenticator.generateAPIJWT({ deploymentId: -1 }, secret)
-    await PreferenceStore.set<AuthorizationTokenParams>(preferenceKey, {
-      currentSecret: secret,
-      serviceKey
-    })
-    return serviceKey
-  }
-  return currentAuth.serviceKey
-}
+import { getServiceKey } from '../../../utils/jwt'
 
 // Compiles the application with specific build command and starts the server
 export const StartDevServer = async (): Promise<void> => {
@@ -57,7 +22,7 @@ export const StartDevServer = async (): Promise<void> => {
     },
     storage
   })
-  const serviceKey = await GetJWTToken()
+  const serviceKey = await getServiceKey()
   const api = new ExpressAPIBuilder({ application: app, authorizer: defaultRequestAuthorizer })
   const PORT = process.env.PORT ?? 8000
   api.build().listen(PORT, () => {
