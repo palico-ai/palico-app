@@ -3,23 +3,19 @@
 // import EventHandler from './request_handler'
 
 import { Application } from '../app'
-import { LocalStorage } from '../storage'
-import { sequelize } from '../storage/local_storage/database'
+import { type StorageService } from '../storage'
 import { CurrentProject } from '../utils'
 import type * as express from 'express'
 import { ExpressAPIBuilder } from './express_api_builder'
 import { defaultRequestAuthorizer } from './middlewares/local_authorizer'
 
-export interface DevServerOutput {
-  api: express.Application
-  sequelize: typeof sequelize
+interface CreateAPIServerOptions {
+  storage: StorageService
 }
 
-export const CreateDevServer = async (): Promise<DevServerOutput> => {
+// Using the current application config, creates an API Server
+export const CreateApplicationAPIServer = async (params: CreateAPIServerOptions): Promise<express.Application> => {
   const appConfig = await CurrentProject.getApplicationAPIConfig()
-  const storage = new LocalStorage()
-  const FORCE_SYNC = process.env.FORCE_SYNC_DB === 'true'
-  await sequelize.sync({ force: FORCE_SYNC })
   const app = new Application({
     promptBuilder: appConfig.promptBuilder,
     tools: appConfig.toolset?.tools ?? [],
@@ -27,14 +23,11 @@ export const CreateDevServer = async (): Promise<DevServerOutput> => {
       model: appConfig.model,
       openaiApiKey: appConfig.openaiApiKey
     },
-    storage
+    storage: params.storage
   })
   const api = new ExpressAPIBuilder({
     application: app,
     authorizer: defaultRequestAuthorizer
   })
-  return {
-    api: api.build(),
-    sequelize
-  }
+  return api.build()
 }

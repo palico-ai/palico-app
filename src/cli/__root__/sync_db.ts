@@ -1,4 +1,4 @@
-import { sequelize } from '../../storage/local_storage/database'
+import { sequelize } from '../../storage/sql/database'
 
 interface Options {
   forceSync?: boolean

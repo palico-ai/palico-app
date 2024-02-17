@@ -76,12 +76,9 @@ export class CurrentProject {
     }
   }
 
-  static async getApplicationAPIConfig (buildApp: boolean = true): Promise<SimpleApplicationConfig> {
+  static async getApplicationAPIConfig (): Promise<SimpleApplicationConfig> {
     if (this.applicationConfig) {
       return this.applicationConfig
-    }
-    if (buildApp) {
-      await this.buildApplication()
     }
     const projectRootPath = await this.getPackageDirectory()
     const config = await this.getPackageConfig()
