@@ -56,6 +56,6 @@ class SQLConversationService implements ConversationService {
   }
 }
 
-export class LocalStorage implements StorageService {
+export class SQLStorage implements StorageService {
   conversation: ConversationService = new SQLConversationService()
 }
