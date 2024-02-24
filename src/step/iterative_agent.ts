@@ -8,7 +8,7 @@ import type OpenAI from 'openai'
 
 export interface AgentCallResponse {
   finishReason: OpenAI.Chat.ChatCompletion.Choice['finish_reason']
-  message: AgentMessage
+  message?: AgentMessage
 }
 
 export interface AgentMessage {
@@ -48,10 +48,10 @@ export interface Agent {
 /**
  * Manages conversations, building prompts, running tools, resuming and pausing execution.
  */
-export class IterativeAgent implements Agent {
-  private static readonly logger = new TagLogger(IterativeAgent.name)
+export class AgentIterator implements Agent {
+  private static readonly logger = new TagLogger(AgentIterator.name)
   readonly promptBuilder: PromptBuilder
-  conversationId?: number
+  private conversationId?: number
   readonly tools: ChatCompletionTool[]
   readonly modelConfig: ModelConfig
   private readonly conversationService: ConversationService
@@ -60,7 +60,7 @@ export class IterativeAgent implements Agent {
   constructor (params: AgentCurrentStateParams) {
     this.conversationId = params.conversationId
     this.promptBuilder = params.promptBuilder
-    this.tools = IterativeAgent.getTools(params.tools)
+    this.tools = AgentIterator.getTools(params.tools)
     this.modelConfig = params.modelConfig
     this.conversationService = params.conversationService
   }
@@ -147,7 +147,7 @@ export class IterativeAgent implements Agent {
   }
 
   async replyWithToolOutputs (params: ReplyAsToolParams): Promise<AgentResponse> {
-    IterativeAgent.logger.log('replyWithToolOutputs')
+    AgentIterator.logger.log('replyWithToolOutputs')
     if (!this.conversationId) {
       throw new Error('Conversation ID not set. Cannot reply with tool outputs')
     }
